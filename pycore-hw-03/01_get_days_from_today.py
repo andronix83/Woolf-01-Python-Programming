@@ -33,7 +33,7 @@ def get_days_from_today(date: str) -> int:
 
 if __name__ == '__main__':
     print("How many days have passed from several important events:")
-    print("===================================================")
+    print("=" * 56)
     print(f"1. {get_days_from_today("1983-12-30")} days since Andrii Pererva's birthday :)")
     print(f"2. {get_days_from_today("1991-08-24")} days since the Independence of Ukraine")
     print(f"3. {get_days_from_today("2014-02-22")} days since the Revolution of Dignity")
