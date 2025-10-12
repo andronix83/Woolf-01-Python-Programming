@@ -14,16 +14,13 @@ def get_days_from_today(date: str) -> int:
     """
     try:
         # Convert the provided date string into a datetime object
-        input_date = datetime.strptime(date, '%Y-%m-%d')
+        input_date = datetime.strptime(date, '%Y-%m-%d').date()
     except ValueError as e:
         # Raise an exception if the date format is incorrect or the date is invalid (e.g., 2023-02-30)
         raise ValueError(f"Incorrect date format or invalid date! Please use YYYY-MM-DD. Details: {e}")
 
-    # Get the current date (and time), then normalize it to only the date part
-    # to ensure the calculation is purely based on the day difference, not time.
-    today_date = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
-    # Also normalize the input date to only the date part for a clean day count.
-    input_date = input_date.replace(hour=0, minute=0, second=0, microsecond=0)
+    # Get the current datetime, then normalize it to only the date part
+    today_date = datetime.today().date()
 
     # Calculate the difference between the dates
     date_difference: timedelta = today_date - input_date
