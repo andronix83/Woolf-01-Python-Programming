@@ -27,8 +27,7 @@ def get_days_from_today(date: str) -> int:
 
     return date_difference.days
 
-
-if __name__ == '__main__':
+def main():
     print("How many days have passed from several important events:")
     print("=" * 56)
     print(f"1. {get_days_from_today("1983-12-30")} days since Andrii Pererva's birthday :)")
@@ -37,3 +36,7 @@ if __name__ == '__main__':
     print(f"4. {get_days_from_today("2019-01-05")} days since granting of the Tomos to Ukrainian Church")
     print(f"5. {get_days_from_today("2022-02-24")} days since full-scale ruzzian invasion to Ukraine")
     print(f"BONUS. {abs(get_days_from_today("2026-01-01"))} days before the new 2026 year!")
+
+
+if __name__ == '__main__':
+    main()

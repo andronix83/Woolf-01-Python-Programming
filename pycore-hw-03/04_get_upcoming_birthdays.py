@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 NUMBER_OF_UPCOMING_DAYS = 7
 DATE_FORMAT = '%Y.%m.%d'
 
-def get_upcoming_birthdays(users: list) -> list:
+def get_upcoming_birthdays(users: list[dict]) -> list[dict]:
     """
     Returns a list of users with upcoming birthdays within the next NUMBER_OF_UPCOMING_DAYS days.
 
@@ -50,8 +50,7 @@ def get_upcoming_birthdays(users: list) -> list:
 
     return users_with_upcoming_birthdays
 
-
-if __name__ == '__main__':
+def main():
     test_users_data = [
         {"name": "Eleanor Vance", "birthday": "1963.07.19"},
         {"name": "Arthur Pinter", "birthday": "1998.02.05"},
@@ -90,3 +89,7 @@ if __name__ == '__main__':
     print(f"List of users with upcoming birthdays (next {NUMBER_OF_UPCOMING_DAYS} days):")
     for index, user in enumerate(upcoming_birthdays):
         print(f"{index+1}. {user}")
+
+
+if __name__ == '__main__':
+    main()

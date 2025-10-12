@@ -35,9 +35,7 @@ def get_numbers_ticket(min: int, max: int, quantity: int) -> list[int]:
     # 3. Sort the generated result and return it
     return sorted(randomly_drawn_numbers)
 
-
-if __name__ == '__main__':
-
+def main():
     # Valid test cases
     valid_draw_1 = get_numbers_ticket(1, 49, 6)
     print(f"Valid Draw (1-49, 6 numbers): {valid_draw_1}")
@@ -67,3 +65,7 @@ if __name__ == '__main__':
 
     invalid_range = get_numbers_ticket(50, 30, 6)
     print(f"Invalid Draw (min > max): {invalid_range}")
+
+
+if __name__ == '__main__':
+    main()

@@ -59,9 +59,7 @@ def test_normalize_phone(phone_list: list) -> None:
     else:
         print("\nSome tests failed. 🛑")
 
-
-if __name__ == "__main__":
-
+def main():
     # first set of phone numbers from the task description section
     phone_numbers_1 = [
         ("    +38(050)123-32-34",   "+380501233234"),
@@ -87,3 +85,7 @@ if __name__ == "__main__":
     # run the tests
     test_normalize_phone(phone_numbers_1)
     test_normalize_phone(phone_numbers_2)
+
+
+if __name__ == "__main__":
+    main()
