@@ -1,6 +1,6 @@
 def total_salary(path: str) -> tuple[int, float]:
     """
-    Calculates the total and average salary from a file using read_file().
+    Calculates the total and average salary from a file.
     The file must have one employee per line, formatted as: '<Name>,<Salary>'
 
     Args:
@@ -19,8 +19,7 @@ def total_salary(path: str) -> tuple[int, float]:
     # Process the lines in order to extract salaries
     for line in data_lines:
         try:
-            # The salary is the part after the last comma
-            parts = line.rsplit(',', 1)
+            parts = line.split(',')
             if len(parts) == 2:
                 # Attempt to convert the salary string to an integer
                 salary = int(parts[1].strip())
@@ -62,7 +61,7 @@ def main():
         file_name = f"employee_data_{file_type}.txt"
         print(f"\nProcessing the {file_type} data file ({file_name}):")
 
-        total, average = total_salary(file_name)
+        total, average = total_salary(f"data_files/{file_name}")
         print(f"Total amount of salary: {total}")
         print(f"Average salary: {average}")
 
