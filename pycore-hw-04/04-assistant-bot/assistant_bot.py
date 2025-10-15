@@ -1,4 +1,4 @@
-def parse_input(user_input: str) -> tuple[str, str]:
+def parse_input(user_input: str) -> tuple[str, list[str]]:
     cmd, *args = user_input.split()
     cmd = cmd.strip().lower()
     return cmd, *args
@@ -7,9 +7,9 @@ def add_contact(args: str, contacts: dict[str, str]) -> str:
     name, phone = args
     if not contacts.get(name):
         contacts[name] = phone
-        return "Contact added."
+        return f"Contact '{name}' added."
     else:
-        return f"Contact '{name}' already exists."
+        return f"ERROR: Contact '{name}' already exists!"
 
 def change_contact(args: str, contacts: dict[str, str]) -> str:
     name, phone = args
@@ -17,12 +17,15 @@ def change_contact(args: str, contacts: dict[str, str]) -> str:
         contacts[name] = phone
         return f"Contact '{name}' updated."
     else:
-        return "Contact not found."
+        return f"ERROR: Contact '{name}' not found!"
 
 def show_phone(args: str, contacts: dict[str, str]) -> str:
     name, = args
-    phone = contacts[name]
-    return phone
+    if contacts.get(name):
+        phone = contacts[name]
+        return phone
+    else:
+        return f"ERROR: Contact '{name}' not found!"
 
 def show_all(contacts: dict[str, str]) -> list[str]:
     return [f"{name}: {phone}" for name, phone in contacts.items()]
@@ -48,8 +51,8 @@ def main():
         elif command == "show":
             print(show_phone(args, contacts))
         elif command == "all":
-            for contact in show_all(contacts):
-                print(f" - {contact}")
+            for i, contact in enumerate(show_all(contacts)):
+                print(f"{i+1}. {contact}")
         else:
             print("Invalid command.")
 
