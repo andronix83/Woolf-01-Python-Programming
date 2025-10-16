@@ -15,7 +15,7 @@ def generator_numbers(text: str) -> Generator:
     # Find all matches in the text
     for match in re.finditer(number_pattern, text):
         # Yields rounded float, that represents some amount of money
-        yield round(float(match.group(0)), 2)
+        yield float(match.group(0))
 
 def sum_profit(text: str, func: Callable) -> float:
     return sum(func(text))
@@ -26,7 +26,8 @@ def main():
 
     total_income = sum_profit(text, generator_numbers)
 
-    print(f"Загальний дохід: {total_income}") # Expected value: 1351.46
+    # Expected value: 1351.46
+    print(f"Загальний дохід: {round(total_income, 2)}")
 
 
 if __name__ == '__main__':
