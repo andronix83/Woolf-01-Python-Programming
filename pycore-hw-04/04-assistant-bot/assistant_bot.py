@@ -1,4 +1,6 @@
 def parse_input(user_input: str) -> tuple[str, list[str]]:
+    if not user_input:
+        return "", []
     cmd, *args = user_input.split()
     cmd = cmd.strip().lower()
     return cmd, *args
@@ -30,6 +32,13 @@ def show_phone(args: str, contacts: dict[str, str]) -> str:
 def show_all(contacts: dict[str, str]) -> list[str]:
     return [f"{name}: {phone}" for name, phone in contacts.items()]
 
+def print_all_contacts(contacts: dict[str, str]) -> None:
+    if contacts:
+        for i, contact in enumerate(show_all(contacts)):
+            print(f"{i + 1}. {contact}")
+    else:
+        print("No contacts to show!")
+
 
 def main():
     contacts = {}
@@ -51,10 +60,9 @@ def main():
         elif command == "show":
             print(show_phone(args, contacts))
         elif command == "all":
-            for i, contact in enumerate(show_all(contacts)):
-                print(f"{i+1}. {contact}")
+            print_all_contacts(contacts)
         else:
-            print("Invalid command.")
+            print("Invalid or empty command!")
 
 
 if __name__ == "__main__":
