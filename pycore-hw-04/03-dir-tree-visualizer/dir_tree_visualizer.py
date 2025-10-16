@@ -1,4 +1,5 @@
 import argparse
+import os
 import sys
 from pathlib import Path
 from colorama import init, Fore, Style
@@ -48,9 +49,9 @@ def visualize_directory_tree(path: Path, prefix: str = '', level: int = 0):
 
         # Determine the display color
         if item.is_dir():
-            display_name = FOLDER_COLOR + item.name + '/'
+            display_name = '📂' + FOLDER_COLOR + item.name + os.sep
         else:
-            display_name = FILE_COLOR + item.name
+            display_name = '📜' + FILE_COLOR + item.name
 
         # Print the current line: prefix + pointer + colored name
         print(f"{prefix}{pointer}{display_name}")
@@ -91,7 +92,7 @@ def main():
     validate_path(target_path)
 
     # Print the root directory, which is guaranteed to be a directory here
-    print(f"\n{FOLDER_COLOR}{target_path.resolve()}/ {Style.DIM}")
+    print(f"\n📦{FOLDER_COLOR}{target_path.resolve()}{os.sep}{Style.DIM}")
 
     # Start the recursive visualization
     visualize_directory_tree(target_path)
