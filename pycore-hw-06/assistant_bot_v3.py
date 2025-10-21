@@ -14,6 +14,9 @@ class Field:
     def __eq__(self, other: 'Field') -> bool:
         return self.value == other.value
 
+    def __hash__(self) -> int:
+        return hash(self.value)
+
     def __str__(self):
         return str(self.value)
 
@@ -110,7 +113,7 @@ def main():
     # Should delete Jane's contact record from the address book
     address_book.delete("Jane")
 
-    # Bonus 1: test validation of phone length
+    # Bonus 1: test validation of phone correctness
     for invalid_phone in ("5x555555x5", "55555"):
         try:
             john.edit_phone("5555555555", invalid_phone)
