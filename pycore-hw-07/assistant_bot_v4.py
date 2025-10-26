@@ -1,4 +1,10 @@
 from collections import UserDict
+from datetime import datetime, timedelta
+from typing import Callable
+
+
+NUMBER_OF_UPCOMING_DAYS = 20
+DATE_FORMAT = '%d.%m.%Y'
 
 
 class PhoneFormatError(Exception):
@@ -33,18 +39,31 @@ class Phone(Field):
 
     def __validate_phone(self, phone):
         if not phone.isdigit():
-            raise PhoneFormatError("Phone number should contain digits only!")
+            raise PhoneFormatError("❌ Phone number should contain digits only!")
         if len(phone) != 10:
-            raise PhoneFormatError("Phone number should contain exactly 10 digits!")
+            raise PhoneFormatError("❌ Phone number should contain exactly 10 digits!")
 
+class Birthday(Field):
+    def __init__(self, date: str):
+        try:
+            super().__init__(datetime.strptime(date, DATE_FORMAT).date())
+        except ValueError:
+            raise ValueError("❌ Invalid date format! Use DD.MM.YYYY")
+
+    def __str__(self):
+        return self.value.strftime(DATE_FORMAT)
 
 class Record:
     def __init__(self, name: str):
         self.name = Name(name)
         self.phones = []
+        self.birthday = None
 
     def add_phone(self, phone: str) -> None:
         self.phones.append(Phone(phone))
+
+    def add_birthday(self, date: str) -> None:
+        self.birthday = Birthday(date)
 
     def find_phone(self, phone_str: str) -> Phone | None:
         for phone in self.phones:
@@ -61,7 +80,10 @@ class Record:
         self.phones.remove(Phone(phone_str))
 
     def __str__(self):
-        return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}"
+        result_str = f"Contact name: {self.name.value}, phone(s): {', '.join(p.value for p in self.phones)}"
+        if self.birthday:
+            result_str += f", birthday: {self.birthday}"
+        return result_str
 
 
 class AddressBook(UserDict):
@@ -69,59 +91,149 @@ class AddressBook(UserDict):
         self.data[record.name.value] = record
 
     def find(self, name: str) -> Record:
-        return self.data[name]
+        return self.get(name)
 
     def delete(self, name):
         del self.data[name]
 
+    def get_upcoming_birthdays(self) -> list[tuple]:
+        today_date = datetime.today().date()
+        end_date = today_date + timedelta(days=NUMBER_OF_UPCOMING_DAYS)
+        contacts_with_upcoming_birthdays = []
+
+        for contact in self.data.values():
+            if not contact.birthday:
+                continue
+            physical_bd = contact.birthday.value
+            this_or_next_year_bd = physical_bd.replace(year=today_date.year)
+            if this_or_next_year_bd < today_date:
+                this_or_next_year_bd = this_or_next_year_bd.replace(year=today_date.year + 1)
+            if today_date <= this_or_next_year_bd <= end_date:
+                congratulation_date = this_or_next_year_bd
+                if this_or_next_year_bd.weekday() in (5, 6):
+                    days_to_next_monday = 7 - this_or_next_year_bd.weekday()
+                    congratulation_date = (this_or_next_year_bd + timedelta(days=days_to_next_monday))
+                contacts_with_upcoming_birthdays.append((contact, congratulation_date))
+            contacts_with_upcoming_birthdays.sort(key=lambda x: x[1])
+        return contacts_with_upcoming_birthdays
+
+def input_error(func: Callable) -> Callable:
+    def inner(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except ValueError:
+            return f"❌ Please enter enough arguments for the command!"
+        except (KeyError, IndexError, PhoneFormatError) as e:
+            return e.args[0] # Message from the original error
+    return inner
+
+def parse_input(user_input: str) -> tuple[str, list[str]]:
+    if not user_input:
+        return "", []
+    cmd, *args = user_input.split()
+    cmd = cmd.strip().lower()
+    return cmd, *args
+
+@input_error
+def add_contact(args: list[str], address_book: AddressBook) -> str:
+    name, phone, *_ = args
+    record = address_book.find(name)
+    message = f"✅ Contact '{name}' was updated."
+    if record is None:
+        record = Record(name)
+        address_book.add_record(record)
+        message = f"✅ Contact '{name}' was added."
+    if phone:
+        record.add_phone(phone)
+    return message
+
+@input_error
+def change_contact(args: list[str], address_book: AddressBook) -> str:
+    name, old_phone, new_phone = args # raises ValueError if not enough arguments
+    found_record = address_book.find(name)
+    if not found_record:
+        raise KeyError(f"❌ Contact '{name}' doesn't exists! Enter another name.")
+    found_record.edit_phone(old_phone, new_phone)
+    return f"✅ Contact '{name}' ws updated with the new phone: '{new_phone}'."
+
+@input_error
+def show_phones(args: str, address_book: AddressBook) -> str:
+    name, = args # raises ValueError if no arguments provided
+    found_record = address_book.find(name)
+    if not found_record:
+        raise KeyError(f"❌ Contact '{name}' doesn't exists! Enter another name.")
+    return ', '.join(p.value for p in found_record.phones)
+
+@input_error
+def show_all(address_book: AddressBook) -> list[str]:
+    return [f"{record}" for record in address_book.data.values()]
+
+def print_all_contacts(address_book: AddressBook) -> None:
+    if address_book.data:
+        for i, contact in enumerate(show_all(address_book)):
+            print(f"{i + 1}. {contact}")
+    else:
+        print("No contacts to show!")
+
+@input_error
+def add_birthday(args: list[str], address_book: AddressBook) -> str:
+    name, birthday = args
+    found_record = address_book.find(name)
+    if not found_record:
+        raise KeyError(f"❌ Contact '{name}' doesn't exists! Enter another name.")
+    found_record.add_birthday(birthday)
+    return f"✅ Contact '{name}' ws updated with birthday: '{birthday}'."
+
+@input_error
+def show_birthday(args: list[str], address_book: AddressBook) -> str:
+    name, = args
+    found_record = address_book.find(name)
+    if not found_record:
+        raise KeyError(f"❌ Contact '{name}' doesn't exists! Enter another name.")
+    return found_record.birthday
+
+def print_upcoming_birthdays(address_book: AddressBook):
+    if address_book.data:
+        upcoming_birthdays = address_book.get_upcoming_birthdays()
+        if upcoming_birthdays:
+            print(f"List of contacts with upcoming birthdays (next {NUMBER_OF_UPCOMING_DAYS} days):")
+            for i, (record, cong_date) in enumerate(upcoming_birthdays):
+                print(f"{i + 1}. {record.name} - birthday: {record.birthday}, congratulation date: {cong_date.strftime(DATE_FORMAT)}")
+        else:
+            print("No contacts with upcoming birthdays!")
+    else:
+        print("No contacts to show!")
 
 def main():
-    """
-    This whole scenario was copied from the homework description
-    """
-    # Create a new AddressBook instance
     address_book = AddressBook()
+    print("Welcome to the assistant bot!")
 
-    # Create a contact for John and add it to address book
-    john_record = Record("John")
-    john_record.add_phone("1234567890")
-    john_record.add_phone("5555555555")
-    address_book.add_record(john_record)
+    while True:
+        user_input = input("Enter a command ➡️ ")
+        command, *args = parse_input(user_input)
 
-    # Create a contact for Jane and add it to address book
-    jane_record = Record("Jane")
-    jane_record.add_phone("9876543210")
-    address_book.add_record(jane_record)
+        if command in ["close", "exit"]:
+            print("Good bye!")
+            break
 
-    # Printing the entire address book content
-    for name, record in address_book.data.items():
-        print(record)
-
-    # Find John in the address book and change his phone
-    john = address_book.find("John")
-    john.edit_phone("1234567890", "1112223333")
-
-    # Should print out: Contact name: John, phones: 1112223333; 5555555555
-    print(john)
-
-    # Find a specified phone number in John's contact
-    found_phone = john.find_phone("5555555555")
-
-    # Should print out: John: 5555555555
-    print(f"{john.name}: {found_phone}")
-
-    # Should delete Jane's contact record from the address book
-    address_book.delete("Jane")
-
-    # Bonus 1: test validation of phone correctness
-    for invalid_phone in ("5x555555x5", "55555"):
-        try:
-            john.edit_phone("5555555555", invalid_phone)
-        except PhoneFormatError as e:
-            print(f"Expected error: {e}")
-
-    # Bonus 2: test phone removal
-    john.remove_phone("5555555555")
+        elif command == "hello":
+            print("How can I help you?")
+        elif command == "add":
+            print(add_contact(args, address_book))
+        elif command == "change":
+            print(change_contact(args, address_book))
+        elif command == "phone":
+            print(show_phones(args, address_book))
+        elif command == "all":
+            print_all_contacts(address_book)
+        elif command == "add-birthday":
+            print(add_birthday(args, address_book))
+        elif command == "show-birthday":
+            print(show_birthday(args, address_book))
+        elif command == "birthdays":
+            print_upcoming_birthdays(address_book)
+        else:
+            print("❌ Invalid or empty command!")
 
 
 if __name__ == "__main__":
