@@ -1,3 +1,4 @@
+import pickle, sys
 from collections import UserDict
 from datetime import datetime, timedelta
 from typing import Callable
@@ -5,7 +6,7 @@ from typing import Callable
 
 NUMBER_OF_UPCOMING_DAYS = 20
 DATE_FORMAT = '%d.%m.%Y'
-
+ADDRESS_BOOK_FILE_NAME = 'data_files/addressbook.pkl'
 
 class PhoneFormatError(Exception):
     def __init__(self, message):
@@ -204,37 +205,57 @@ def print_upcoming_birthdays(address_book: AddressBook):
     else:
         print("No contacts to show!")
 
+def save_data(address_book, filename):
+    with open(filename, "wb") as f:
+        pickle.dump(address_book, f)
+
+def load_data(filename):
+    try:
+        with open(filename, "rb") as f:
+            return pickle.load(f)
+    except FileNotFoundError:
+        # when open for the first time
+        return AddressBook()
+
 def main():
-    address_book = AddressBook()
+    address_book = load_data(ADDRESS_BOOK_FILE_NAME)
+
     print("Welcome to the assistant bot!")
 
-    while True:
-        user_input = input("Enter a command ➡️ ")
-        command, *args = parse_input(user_input)
+    try:
+        while True:
+            user_input = input("Enter a command ➡️ ")
+            command, *args = parse_input(user_input)
 
-        if command in ["close", "exit"]:
-            print("Good bye!")
-            break
+            if command in ["close", "exit"]:
+                save_data(address_book, ADDRESS_BOOK_FILE_NAME)
+                print("Address book saved. Good bye!")
+                break
 
-        elif command == "hello":
-            print("How can I help you?")
-        elif command == "add":
-            print(add_contact(args, address_book))
-        elif command == "change":
-            print(change_contact(args, address_book))
-        elif command == "phone":
-            print(show_phones(args, address_book))
-        elif command == "all":
-            print_all_contacts(address_book)
-        elif command == "add-birthday":
-            print(add_birthday(args, address_book))
-        elif command == "show-birthday":
-            print(show_birthday(args, address_book))
-        elif command == "birthdays":
-            print_upcoming_birthdays(address_book)
-        else:
-            print("❌ Invalid or empty command!")
+            elif command == "hello":
+                print("How can I help you?")
+            elif command == "add":
+                print(add_contact(args, address_book))
+            elif command == "change":
+                print(change_contact(args, address_book))
+            elif command == "phone":
+                print(show_phones(args, address_book))
+            elif command == "all":
+                print_all_contacts(address_book)
+            elif command == "add-birthday":
+                print(add_birthday(args, address_book))
+            elif command == "show-birthday":
+                print(show_birthday(args, address_book))
+            elif command == "birthdays":
+                print_upcoming_birthdays(address_book)
+            else:
+                print("❌ Invalid or empty command!")
 
+    except KeyboardInterrupt:
+        print("\nAssistant bot was interrupted by user (Ctrl+C).")
+        print(f"Saving Address book state to the file: {ADDRESS_BOOK_FILE_NAME}")
+        save_data(address_book, ADDRESS_BOOK_FILE_NAME)
+        sys.exit(0) # Exit gracefully after saving
 
 if __name__ == "__main__":
     main()
