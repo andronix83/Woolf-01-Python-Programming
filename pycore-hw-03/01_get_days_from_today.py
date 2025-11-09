@@ -1,11 +1,11 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 
-def get_days_from_today(date: str) -> int:
+def get_days_from_today(date_str: str) -> int:
     """
     Function to get the number of days from specific date till today.
 
-    :param date: input date in the format YYYY-MM-DD
+    :param date_str: input date in the format YYYY-MM-DD
     :return: the number of days between the input date and today.
              A positive number means the date is in the past.
              A negative number means the date is in the future.
@@ -14,20 +14,20 @@ def get_days_from_today(date: str) -> int:
     """
     try:
         # Convert the provided date string into a datetime object
-        input_date = datetime.strptime(date, '%Y-%m-%d').date()
+        input_date: date = datetime.strptime(date_str, '%Y-%m-%d').date()
     except ValueError as e:
         # Raise an exception if the date format is incorrect or the date is invalid (e.g., 2023-02-30)
         raise ValueError(f"Incorrect date format or invalid date! Please use YYYY-MM-DD. Details: {e}")
 
     # Get the current datetime, then normalize it to only the date part
-    today_date = datetime.today().date()
+    today_date: date = datetime.today().date()
 
     # Calculate the difference between the dates
     date_difference: timedelta = today_date - input_date
 
     return date_difference.days
 
-def main():
+def main() -> None:
     print("How many days have passed from several important events:")
     print("=" * 56)
     print(f"1. {get_days_from_today("1983-12-30")} days since Andrii Pererva's birthday :)")

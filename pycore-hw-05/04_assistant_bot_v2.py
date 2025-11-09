@@ -1,5 +1,9 @@
 from typing import Callable
 
+type ContactStore = dict[str, str]
+type CommandWithParams = tuple[str, list[str]]
+
+
 def input_error(func: Callable) -> Callable:
     def inner(*args, **kwargs):
         try:
@@ -7,45 +11,52 @@ def input_error(func: Callable) -> Callable:
         except ValueError:
             return f"❌ Please enter enough arguments for the command!"
         except (KeyError, IndexError) as e:
-            return e.args[0] # Message from the original error
+            return e.args[0]  # Message from the original error
+
     return inner
 
-def parse_input(user_input: str) -> tuple[str, list[str]]:
+
+def parse_input(user_input: str) -> CommandWithParams:
     if not user_input:
         return "", []
     cmd, *args = user_input.split()
     cmd = cmd.strip().lower()
     return cmd, *args
 
+
 @input_error
-def add_contact(args: str, contacts: dict[str, str]) -> str:
-    name, phone = args # raises ValueError if not enough arguments
+def add_contact(args: str, contacts: ContactStore) -> str:
+    name, phone = args  # raises ValueError if not enough arguments
     if contacts.get(name):
         raise KeyError(f"❌ Contact '{name}' already exists! Enter another name.")
     contacts[name] = phone
     return f"✅ Contact '{name}' with the phone '{phone}' was added."
 
+
 @input_error
-def change_contact(args: str, contacts: dict[str, str]) -> str:
-    name, phone = args # raises ValueError if not enough arguments
+def change_contact(args: str, contacts: ContactStore) -> str:
+    name, phone = args  # raises ValueError if not enough arguments
     if not contacts.get(name):
         raise KeyError(f"❌ Contact '{name}' doesn't exists! Enter another name.")
     contacts[name] = phone
     return f"✅ Contact '{name}' ws updated with the new phone: '{phone}'."
 
+
 @input_error
-def show_phone(args: str, contacts: dict[str, str]) -> str:
-    name, = args # raises ValueError if no arguments provided
+def show_phone(args: str, contacts: ContactStore) -> str:
+    name, = args  # raises ValueError if no arguments provided
     if not contacts.get(name):
         raise KeyError(f"❌ Contact '{name}' doesn't exists! Enter another name.")
     phone = contacts[name]
     return phone
 
+
 @input_error
-def show_all(contacts: dict[str, str]) -> list[str]:
+def show_all(contacts: ContactStore) -> list[str]:
     return [f"{name}: {phone}" for name, phone in contacts.items()]
 
-def print_all_contacts(contacts: dict[str, str]) -> None:
+
+def print_all_contacts(contacts: ContactStore) -> None:
     if contacts:
         for i, contact in enumerate(show_all(contacts)):
             print(f"{i + 1}. {contact}")
@@ -53,9 +64,10 @@ def print_all_contacts(contacts: dict[str, str]) -> None:
         print("No contacts to show!")
 
 
-def main():
-    contacts = {}
+def main() -> None:
+    contacts: ContactStore = {}
     print("Welcome to the assistant bot!")
+
     while True:
         user_input = input("Enter a command ➡️ ")
         command, *args = parse_input(user_input)

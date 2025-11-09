@@ -1,12 +1,12 @@
 import random
 
 
-def get_numbers_ticket(min: int, max: int, quantity: int) -> list[int]:
+def get_numbers_ticket(min_number: int, max_number: int, quantity: int) -> list[int]:
     """
     Returns a sorted list of unique random numbers between min and max.
 
-    :param min: minimum number (not less than 1)
-    :param max: maximum number (not greater than 1000)
+    :param min_number: minimum number (not less than 1)
+    :param max_number: maximum number (not greater than 1000)
     :param quantity: number of numbers to return
     :return: list of unique randomly drawn numbers
     """
@@ -14,28 +14,28 @@ def get_numbers_ticket(min: int, max: int, quantity: int) -> list[int]:
     # 1. Input validation
     is_valid_input_params = (
             # min is int and greater or equal to 1
-            isinstance(min, int) and min >= 1 and
+            isinstance(min_number, int) and min_number >= 1 and
             # max is int and less or equal to 1000
-            isinstance(max, int) and max <= 1000 and
+            isinstance(max_number, int) and max_number <= 1000 and
             # range is int as well
             isinstance(quantity, int) and
             # range is large enough to pick enough of unique numbers
-            0 < quantity <= max - min + 1
+            0 < quantity <= max_number - min_number + 1
     )
 
     if not is_valid_input_params:
         return []
 
     # 2. Number generation based on inclusive range of possible numbers
-    range_of_possible_numbers = range(min, max + 1)
+    range_of_possible_numbers = range(min_number, max_number + 1)
 
     # Use random.sample to select 'quantity' unique numbers from the range
-    randomly_drawn_numbers = random.sample(range_of_possible_numbers, quantity)
+    randomly_drawn_numbers: list[int] = random.sample(range_of_possible_numbers, quantity)
 
     # 3. Sort the generated result and return it
     return sorted(randomly_drawn_numbers)
 
-def main():
+def main() -> None:
     # Valid test cases
     valid_draw_1 = get_numbers_ticket(1, 49, 6)
     print(f"Valid Draw (1-49, 6 numbers): {valid_draw_1}")

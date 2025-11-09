@@ -1,5 +1,8 @@
+type CatInfo = dict[str, str]
+type CatInfoList = list[CatInfo]
+type LinesList = list[str]
 
-def get_cats_info(path: str) -> list[dict[str, str]]:
+def get_cats_info(path: str) -> CatInfoList:
     """
     Creates a list of dictionaries with cat info from a file using read_file().
     The file must have one cat info per line, formatted as: '<Id>,<Name>,<Age>'
@@ -8,13 +11,13 @@ def get_cats_info(path: str) -> list[dict[str, str]]:
         path (str): The path to the data file.
 
     Returns:
-        list: A list containing dictionaries with cat infos.
+        CatInfoList: A list containing dictionaries with cat infos.
     """
 
     # Read the list of clean lines from the file
-    data_lines = read_file_to_list(path)
+    data_lines: LinesList = read_file_to_list(path)
 
-    cat_info_list = []
+    cat_info_list: CatInfoList = []
 
     # Process the lines in order to extract salaries
     for line in data_lines:
@@ -28,16 +31,16 @@ def get_cats_info(path: str) -> list[dict[str, str]]:
     return cat_info_list
 
 
-def read_file_to_list(path: str) -> list[str]:
+def read_file_to_list(path: str) -> LinesList:
     """
     Reads a file and returns a list of its lines, stripped of whitespaces.
     Function was copied from the previous task :)
     """
-    lines = []
+    lines: LinesList = []
     try:
         with open(path, 'r', encoding='utf-8') as file:
             for line in file:
-                stripped_line = line.strip()
+                stripped_line: str = line.strip()
                 if stripped_line:
                     lines.append(stripped_line)
     except FileNotFoundError:
@@ -47,9 +50,9 @@ def read_file_to_list(path: str) -> list[str]:
 
     return lines
 
-def main():
+def main() -> None:
     for file_type in ("provided", "correct", "broken", "non-existent"):
-        file_name = f"cats_data_{file_type}.txt"
+        file_name: str = f"cats_data_{file_type}.txt"
 
         print(f"\nProcessing the {file_type} data file ({file_name}):")
         # print each item from new line

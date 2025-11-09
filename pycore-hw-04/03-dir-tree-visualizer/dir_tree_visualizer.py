@@ -2,6 +2,8 @@ import argparse
 import os
 import sys
 from pathlib import Path
+from typing import Final
+
 from colorama import init, Fore, Style
 
 # Initialize colorama
@@ -13,7 +15,7 @@ FILE_COLOR = Fore.YELLOW + Style.BRIGHT
 ERROR_COLOR = Fore.RED + Style.BRIGHT
 
 # Safety limit to avoid very deep trees
-MAX_RECURSION_LEVEL = 100
+MAX_RECURSION_LEVEL: Final[int] = 100
 
 
 def visualize_directory_tree(path: Path, prefix: str = '', level: int = 0):

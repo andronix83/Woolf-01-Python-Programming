@@ -1,4 +1,6 @@
-def total_salary(path: str) -> tuple[int, float]:
+type SalaryStats = tuple[int, float]
+
+def total_salary(path: str) -> SalaryStats:
     """
     Calculates the total and average salary from a file.
     The file must have one employee per line, formatted as: '<Name>,<Salary>'
@@ -7,14 +9,14 @@ def total_salary(path: str) -> tuple[int, float]:
         path (str): The path to the data file.
 
     Returns:
-        tuple: A tuple containing (total_salary, average_salary).
+        SalaryStats: A tuple containing (total_salary, average_salary).
                Returns (0, 0) if no valid salaries are found.
     """
     # Read the list of clean lines from the file
     data_lines = read_file_to_list(path)
 
-    total = 0
-    count = 0
+    total: int = 0
+    count: int = 0
 
     # Process the lines in order to extract salaries
     for line in data_lines:
@@ -22,7 +24,7 @@ def total_salary(path: str) -> tuple[int, float]:
             parts = line.split(',')
             if len(parts) == 2:
                 # Attempt to convert the salary string to an integer
-                salary = int(parts[1].strip())
+                salary: int = int(parts[1].strip())
                 total += salary
                 count += 1
             else:
@@ -56,7 +58,7 @@ def read_file_to_list(path: str) -> list[str]:
     return lines
 
 
-def main():
+def main() -> None:
     for file_type in("provided", "correct", "broken", "non-existent"):
         file_name = f"employee_data_{file_type}.txt"
         print(f"\nProcessing the {file_type} data file ({file_name}):")

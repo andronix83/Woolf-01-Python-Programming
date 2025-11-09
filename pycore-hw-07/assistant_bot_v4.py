@@ -1,10 +1,10 @@
+from __future__ import annotations
 from collections import UserDict
 from datetime import datetime, timedelta
-from typing import Callable
+from typing import Callable, Final
 
-
-NUMBER_OF_UPCOMING_DAYS = 20
-DATE_FORMAT = '%d.%m.%Y'
+NUMBER_OF_UPCOMING_DAYS: Final[int] = 20
+DATE_FORMAT: Final[str] = '%d.%m.%Y'
 
 
 class PhoneFormatError(Exception):
@@ -17,7 +17,7 @@ class Field:
     def __init__(self, value):
         self.value = value
 
-    def __eq__(self, other: 'Field') -> bool:
+    def __eq__(self, other: Field) -> bool:
         return self.value == other.value
 
     def __hash__(self) -> int:
@@ -204,7 +204,7 @@ def print_upcoming_birthdays(address_book: AddressBook):
     else:
         print("No contacts to show!")
 
-def main():
+def main() -> None:
     address_book = AddressBook()
     print("Welcome to the assistant bot!")
 

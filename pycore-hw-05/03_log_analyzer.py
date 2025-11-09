@@ -1,10 +1,10 @@
 import argparse
 import sys
-
+from typing import Final
 
 # Only lines with these log levels will be counted and
 # printed (if allowed), other levels will be ignored and skipped
-SUPPORTED_LOG_LEVELS = ["INFO", "DEBUG", "WARNING", "ERROR"]
+SUPPORTED_LOG_LEVELS: Final[list[str]] = ["INFO", "DEBUG", "WARNING", "ERROR"]
 
 def parse_cmd_args() -> tuple[str, list[str]]:
     """
@@ -63,17 +63,17 @@ def pretty_print_counters(level_counter):
         if count > 0:
             print(f"{level:<10} | {count:<5}")
 
-def log_analyzer():
+def log_analyzer() -> None:
     log_file_name, levels_to_print = parse_cmd_args()
-    levels_to_print = validate_log_levels(levels_to_print)
+    levels_to_print: list[str] = validate_log_levels(levels_to_print)
 
-    level_counter = {x: 0 for x in SUPPORTED_LOG_LEVELS}
+    level_counter: dict[str, int] = {x: 0 for x in SUPPORTED_LOG_LEVELS}
 
     # Iterate through the lines of the file
     try:
         with open(log_file_name, "r") as log_file:
             for line in log_file:
-                stripped_line = line.strip()
+                stripped_line: str = line.strip()
                 _, _, level, *_ = stripped_line.upper().split()
                 if level in level_counter:
                     level_counter[level] += 1

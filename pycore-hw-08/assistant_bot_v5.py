@@ -1,12 +1,13 @@
+from __future__ import annotations
 import pickle, sys
 from collections import UserDict
 from datetime import datetime, timedelta
-from typing import Callable
+from typing import Callable, Final
 
 
-NUMBER_OF_UPCOMING_DAYS = 20
-DATE_FORMAT = '%d.%m.%Y'
-ADDRESS_BOOK_FILE_NAME = 'data_files/addressbook.pkl'
+NUMBER_OF_UPCOMING_DAYS: Final[int] = 20
+DATE_FORMAT: Final[str] = '%d.%m.%Y'
+ADDRESS_BOOK_FILE_NAME: Final[str] = 'data_files/addressbook.pkl'
 
 class PhoneFormatError(Exception):
     def __init__(self, message):
@@ -18,7 +19,7 @@ class Field:
     def __init__(self, value):
         self.value = value
 
-    def __eq__(self, other: 'Field') -> bool:
+    def __eq__(self, other: Field) -> bool:
         return self.value == other.value
 
     def __hash__(self) -> int:
@@ -209,7 +210,7 @@ def save_data(address_book, filename):
     with open(filename, "wb") as f:
         pickle.dump(address_book, f)
 
-def load_data(filename):
+def load_data(filename: str):
     try:
         with open(filename, "rb") as f:
             return pickle.load(f)
@@ -217,14 +218,14 @@ def load_data(filename):
         # when open for the first time
         return AddressBook()
 
-def main():
+def main() -> None:
     address_book = load_data(ADDRESS_BOOK_FILE_NAME)
 
     print("Welcome to the assistant bot!")
 
     try:
         while True:
-            user_input = input("Enter a command ➡️ ")
+            user_input: str = input("Enter a command ➡️ ")
             command, *args = parse_input(user_input)
 
             if command in ["close", "exit"]:

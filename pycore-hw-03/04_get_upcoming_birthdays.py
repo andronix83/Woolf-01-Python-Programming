@@ -1,11 +1,14 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
+
+type UserRecord = dict[str, str]
+type UserRecordList = list[UserRecord]
 
 # Increase this number if no results returned!
 NUMBER_OF_UPCOMING_DAYS = 7
 DATE_FORMAT = '%Y.%m.%d'
 
-def get_upcoming_birthdays(users: list[dict]) -> list[dict]:
+def get_upcoming_birthdays(users: UserRecordList) -> UserRecordList:
     """
     Returns a list of users with upcoming birthdays within the next NUMBER_OF_UPCOMING_DAYS days.
 
@@ -13,18 +16,18 @@ def get_upcoming_birthdays(users: list[dict]) -> list[dict]:
     :return: Ordered list of dictionaries, each containing user's 'name' and 'congratulation_date'
     """
 
-    today_date = datetime.today().date()
-    end_date = today_date + timedelta(days=NUMBER_OF_UPCOMING_DAYS)
+    today_date: date = datetime.today().date()
+    end_date: date = today_date + timedelta(days=NUMBER_OF_UPCOMING_DAYS)
 
-    users_with_upcoming_birthdays = []
+    users_with_upcoming_birthdays: UserRecordList = []
 
     for current_user in users:
         try:
             # Parse the original (physical) birthday date from formatted string
-            physical_bd = datetime.strptime(current_user['birthday'], DATE_FORMAT).date()
+            physical_bd: date = datetime.strptime(current_user['birthday'], DATE_FORMAT).date()
 
             # Adjust the birthday year to the current year
-            this_or_next_year_bd = physical_bd.replace(year=today_date.year)
+            this_or_next_year_bd: date = physical_bd.replace(year=today_date.year)
 
             # If the birthday has already occurred this year, get the next year's birthday
             if this_or_next_year_bd < today_date:
@@ -32,11 +35,11 @@ def get_upcoming_birthdays(users: list[dict]) -> list[dict]:
 
             # Check if the upcoming birthday is within the next NUMBER_OF_UPCOMING_DAYS days
             if today_date <= this_or_next_year_bd <= end_date:
-                congratulation_date = this_or_next_year_bd
+                congratulation_date: date = this_or_next_year_bd
                 # Move the birthday to the next Monday if it falls on a weekend
                 if this_or_next_year_bd.weekday() in (5, 6):
-                    days_to_next_monday = 7 - this_or_next_year_bd.weekday()
-                    congratulation_date = (this_or_next_year_bd + timedelta(days=days_to_next_monday))
+                    days_to_next_monday: int = 7 - this_or_next_year_bd.weekday()
+                    congratulation_date: date = (this_or_next_year_bd + timedelta(days=days_to_next_monday))
 
                 users_with_upcoming_birthdays.append({
                     "name": current_user['name'],
@@ -50,7 +53,7 @@ def get_upcoming_birthdays(users: list[dict]) -> list[dict]:
 
     return users_with_upcoming_birthdays
 
-def main():
+def main() -> None:
     test_users_data = [
         {"name": "Eleanor Vance", "birthday": "1963.07.19"},
         {"name": "Arthur Pinter", "birthday": "1998.02.05"},
@@ -84,11 +87,11 @@ def main():
         {"name": "David Morgan", "birthday": "1969.09.02"}
     ]
 
-    upcoming_birthdays = get_upcoming_birthdays(test_users_data)
+    upcoming_birthdays: UserRecordList = get_upcoming_birthdays(test_users_data)
 
     print(f"List of users with upcoming birthdays (next {NUMBER_OF_UPCOMING_DAYS} days):")
     for index, user in enumerate(upcoming_birthdays):
-        print(f"{index+1}. {user}")
+        print(f"{index + 1}. {user}")
 
 
 if __name__ == '__main__':

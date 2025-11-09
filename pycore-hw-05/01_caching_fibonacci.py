@@ -1,13 +1,16 @@
 from typing import Callable
 
-def caching_fibonacci() -> Callable[[int], int]:
+type FibonacciFunc = Callable[[int], int]
+type IntCache = dict[int, int]
+
+def caching_fibonacci() -> FibonacciFunc:
     """
     Returns the fibonacci numbers calculation function
     that supports results caching.
     :return: fibonacci function
     """
     # Cache for previously calculated results
-    cache = {}
+    cache: IntCache = {}
 
     # Nested function that has access to the cache
     def fibonacci(n: int) -> int:
@@ -19,16 +22,16 @@ def caching_fibonacci() -> Callable[[int], int]:
             return cache[n] # return from cache
         else:
             # Calculate the value and save it in the cache
-            result = fibonacci(n - 1) + fibonacci(n - 2)
+            result: int = fibonacci(n - 1) + fibonacci(n - 2)
             cache[n] = result
             return result
 
     return fibonacci
 
 
-def main():
+def main() -> None:
     # Getting the fibonacci function
-    fib = caching_fibonacci()
+    fib: FibonacciFunc = caching_fibonacci()
 
     print(fib(10)) # Should return 55
     print(fib(15)) # Should return 610

@@ -40,9 +40,10 @@ def print_all_contacts(contacts: dict[str, str]) -> None:
         print("No contacts to show!")
 
 
-def main():
+def main() -> None:
     contacts = {}
     print("Welcome to the assistant bot!")
+
     while True:
         user_input = input("Enter a command: ")
         command, *args = parse_input(user_input)

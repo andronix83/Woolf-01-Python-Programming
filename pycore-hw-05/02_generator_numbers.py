@@ -17,11 +17,13 @@ def generator_numbers(text: str) -> Generator:
         # Yields rounded float, that represents some amount of money
         yield float(match.group(0))
 
+
 def sum_profit(text: str, func: Callable) -> float:
     return sum(func(text))
 
-def main():
-    text = """Загальний дохід працівника складається з декількох частин: 1000.01 як \
+
+def main() -> None:
+    text: str = """Загальний дохід працівника складається з декількох частин: 1000.01 як \
 основний дохід, доповнений додатковими надходженнями 27.45 і 324.00 доларів."""
 
     total_income = sum_profit(text, generator_numbers)

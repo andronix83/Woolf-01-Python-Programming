@@ -8,26 +8,27 @@ def normalize_phone(phone_number: str) -> str:
     :param phone_number: raw phone number to normalize.
     :return: The normalized phone number string.
     """
+
     # 1. Strip extra whitespaces (if present)
-    cleaned_phone_number = phone_number.strip()
+    cleaned_phone_number: str = phone_number.strip()
 
     # 2. Remove all extra symbols except digits and the plus sign
-    cleaned_phone_number = re.sub(r'[^\d+]', '', cleaned_phone_number)
+    cleaned_phone_number: str = re.sub(r'[^\d+]', '', cleaned_phone_number)
 
     # 3. Apply normalization rules from the requirements
     if cleaned_phone_number.startswith('+'):
         # if the number starts with plus - we assume it is correct and complete
-        normalized_number = cleaned_phone_number
+        normalized_number: str = cleaned_phone_number
     elif cleaned_phone_number.startswith('380'):
         # if the cleaned number starts with 380 - we only add plus
-        normalized_number = '+' + cleaned_phone_number
+        normalized_number: str = '+' + cleaned_phone_number
     elif cleaned_phone_number.startswith('0'):
         # if the cleaned number starts with 0,
         # we assume it is a Ukrainian number and add +38
-        normalized_number = '+38' + cleaned_phone_number
+        normalized_number: str = '+38' + cleaned_phone_number
     else:
         # Fallback for other unexpected formats, for robust code
-        normalized_number = cleaned_phone_number
+        normalized_number: str = cleaned_phone_number
 
     return normalized_number
 
@@ -37,12 +38,12 @@ def test_normalize_phone(phone_list: list) -> None:
     Runs the validation examples for the normalize_phone function.
     """
 
-    all_tests_passed = True
+    all_tests_passed: bool = True
 
     for provided, expected in phone_list:
-        normalized = normalize_phone(provided)
-        passed = normalized == expected
-        status = "✅ PASSED" if passed else "❌ FAILED"
+        normalized: str = normalize_phone(provided)
+        passed: bool = normalized == expected
+        status: str = "✅ PASSED" if passed else "❌ FAILED"
 
         if not passed:
             all_tests_passed = False
@@ -59,7 +60,7 @@ def test_normalize_phone(phone_list: list) -> None:
     else:
         print("\nSome tests failed. 🛑")
 
-def main():
+def main() -> None:
     # first set of phone numbers from the task description section
     phone_numbers_1 = [
         ("    +38(050)123-32-34",   "+380501233234"),

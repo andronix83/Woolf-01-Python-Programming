@@ -1,5 +1,5 @@
+from __future__ import annotations
 from collections import UserDict
-
 
 class PhoneFormatError(Exception):
     def __init__(self, message):
@@ -11,7 +11,7 @@ class Field:
     def __init__(self, value):
         self.value = value
 
-    def __eq__(self, other: 'Field') -> bool:
+    def __eq__(self, other: Field) -> bool:
         return self.value == other.value
 
     def __hash__(self) -> int:
@@ -75,7 +75,7 @@ class AddressBook(UserDict):
         del self.data[name]
 
 
-def main():
+def main() -> None:
     """
     This whole scenario was copied from the homework description
     """
